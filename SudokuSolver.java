@@ -53,27 +53,64 @@ public class SudokuSolver {
 
     public static void main(String[] args){
         int[][] arr = new int[9][9];
-        arr[0][0] = 1;
-        arr[2][0] = 9;
-        arr[1][1] = 5;
-    
+        //arr[0][0] = 4;
+
         SudokuSolver ss = new SudokuSolver(arr);
-        System.out.println(ss.check(7,0,8));
+        ss.solve();
+        ss.printBoard();
 
 
     }
+    
+    public void solve(){
+        for(int i=1; i<= 9; i++){
+            backtrackSudoku(1,i);    
+            
+        }
+    }
+    
+    public void printBoard(){
+        for(int r=0; r<9; r++){
+            for(int c=0; c<9; c++){
+                System.out.print(" "+ board[r][c] +" ");
+                if((c+1)%3==0){
+                    System.out.print("|");
+                }
+            }
+            System.out.println();
+            if((r+1)%3==0){
+                
+                System.out.println("------------------------------");
+            }
+        }
+    }
 
-    public boolean backtrackSudoku(int[][] board, HashMap<Integer, LinkedHashSet<Integer>> hm, int c, int r){
-
-        if(board[c][r] != 0){
-
-
-
-        }else{
-
+    public void backtrackSudoku(int quadrant, int key){
+        if(quadrant > 0 && quadrant <= 9){
+            int row = getRowByQuadrant(quadrant);
+            int col = getColumnByQuadrant(quadrant);
+            
+            if(this.keySet.get(quadrant).contains(key)){
+                for(int r=row; r<row+3; r++){
+                    for(int c=col;c<col+3; c++){
+                        if(this.board[r][c] == 0){
+                            if(check(r,c,key)){
+                                this.board[r][c] = key;
+                                this.keySet.get(quadrant).remove(key);
+                                if(quadrant+1 <= 9){
+                                    backtrackSudoku(quadrant+1, key);
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{
+                if(quadrant+1 <= 9){
+                    backtrackSudoku(quadrant+1, key);
+                }
+            }
         }
 
-        return false;
 
     }
 
@@ -86,8 +123,8 @@ public class SudokuSolver {
                     // Adding all keys to each quadrant
                     addNumbers(keys);
                     
-                    int cStart = columnsByQuadrant(quadrant);
-                    int rStart = rowsByQuadrant(quadrant);
+                    int cStart = getColumnByQuadrant(quadrant);
+                    int rStart = getRowByQuadrant(quadrant);
                     for(int c = cStart; c < cStart+3; c++){
                             // Reading from each quadrant (3x3 sub-board)
                             for(int r = rStart; r< rStart+3; r++){
@@ -109,7 +146,7 @@ public class SudokuSolver {
      * @param q: 1 of the 9 possible quadrants
      * @return horizontal index j of the starting 3x3 sub-board
      */
-    public int columnsByQuadrant(int q){
+    public int getColumnByQuadrant(int q){
             q = (q-1) % 3;
             return q*3;
     }
@@ -119,7 +156,7 @@ public class SudokuSolver {
      * @param q: 1 of the 9 possible quadrants
      * @return vertical index i of the starting 3x3 sub-board
      */
-    public int rowsByQuadrant(int q){
+    public int getRowByQuadrant(int q){
             q= (int) (q-1)/3;
             return q*3;
     }
@@ -166,13 +203,13 @@ public class SudokuSolver {
         // vertical check
         for(int i=0; i<9; i++){
             if( row != i &&  this.board[i][column] == number ){
-                            return false;
+                return false;
             }
         }
         // Horizontal check
         for(int i=0; i<9; i++){
             if( row != i && this.board[row][i] == number){
-                    return false;
+                return false;
             }
         }
         return true;
