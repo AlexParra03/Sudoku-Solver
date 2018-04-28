@@ -35,12 +35,15 @@ public class SudokuSolver {
     // Ex: KeySet[ Quadrant 2 ] -> {1,2,6,8 keys left}
     public HashMap<Integer, LinkedHashSet<Integer>> keySet = null;
     
+    public int[][] board = new int[9][9];
+    
 	
     SudokuSolver(int[][] board){
         if(board.length == 9 && board[0].length ==  9){
             keySet = new HashMap<>();
             // Reads from an 9x9 board and computers keys left to put 
             this.keySet = setBoard(board);
+            this.board = board;
         }else{
             System.out.println("Error: Board dimensions should be 9x9");
         }
@@ -55,7 +58,7 @@ public class SudokuSolver {
         arr[1][1] = 5;
     
         SudokuSolver ss = new SudokuSolver(arr);
-        System.out.println(ss.keySet.get(1));
+        System.out.println(ss.check(7,0,8));
 
 
     }
@@ -159,20 +162,19 @@ public class SudokuSolver {
 
 
 
-    public boolean check(int[][] array, int row, int column, int number){
-            // vertical check
-            for(int i=0; i<9; i++){
-
-                    if( row != i &&  array[i][column] == number ){
-                                    return false;
-                    }
-            }
-            // Horizontal check
-            for(int i=0; i<9; i++){
-                    if( row != i && array[row][i] == number){
+    public boolean check(int row, int column, int number){
+        // vertical check
+        for(int i=0; i<9; i++){
+            if( row != i &&  this.board[i][column] == number ){
                             return false;
-                    }
             }
-            return true;
+        }
+        // Horizontal check
+        for(int i=0; i<9; i++){
+            if( row != i && this.board[row][i] == number){
+                    return false;
+            }
+        }
+        return true;
     }
 }
